@@ -1,0 +1,73 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id    Int    @id @default(autoincrement())
+    email String @unique
+
+    hash      String
+    hashRt    String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    profile   Profile?
+
+    @@map(name: "users")
+}
+
+model Profile {
+    user   User @relation(fields: [userId], references: [id])
+    userId Int  @unique
+
+    name             String        @unique
+    surname          String
+    isBlocked        Boolean       @default(false)
+    role             RoleEnumType? @default(user)
+    subscribersCount Int?
+    description      String
+    location         String
+    bannerPath       String
+    avatarPath       String
+
+    @@map(name: "profiles")
+}
+
+enum RoleEnumType {
+    creator
+    user
+    admin
+}
+
+model Video {
+    id            Int       @id @default(autoincrement())
+    name          String
+    isPublic      Boolean   @default(true)
+    views         Int?      @default(0)
+    like          Int?      @default(0)
+    dislike       Int?      @default(0)
+    description   String
+    videoPath     String
+    avatarPath    String
+    thumbnailPath String
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+    comment       Comment[]
+
+    @@map(name: "videos")
+}
+
+model Comment {
+    id        Int      @id @default(autoincrement())
+    video     Video    @relation(fields: [videoId], references: [id])
+    videoId   Int
+    message   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map(name: "comments")
+}

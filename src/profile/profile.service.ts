@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { Profile, RoleEnumType } from "@prisma/client";
 import { CreateProfileArgs, UpdateAnotherProfileArgs, UpdateProfileArgs } from "./types";
 import { UserId } from "../auth/types";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class ProfileService {
@@ -37,6 +38,12 @@ export class ProfileService {
     })
   }
 
+  async delete(userId: UserId): Promise<Profile> {
+    const deletedProfile = await this.prisma.profile.delete({ where: { userId } })
+    await this.userService.delete(userId)
+    return deletedProfile
+  }
+
 
   private async isHaveAccess(role: RoleEnumType, userId: UserId): Promise<boolean> {
     const profile = await this.prisma.profile.findUnique({ where: { userId: +userId } })
@@ -47,6 +54,7 @@ export class ProfileService {
 
   constructor(
     private prisma: PrismaService,
+    private userService: UserService
   ) {
   }
 }

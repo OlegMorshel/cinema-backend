@@ -7,22 +7,26 @@ import { AuthService } from './auth.service'
 import { AtStrategy, RtStrategy } from './strategies'
 import { ProfileModule } from "../profile/profile.module";
 import { ProfileService } from "../profile/profile.service";
+import { UserModule } from "../user/user.module";
+import { UserService } from "../user/user.service";
 
 
 @Module({
   controllers: [ AuthController ],
   imports: [
     PrismaModule,
+    JwtModule.register({}),
     ConfigModule,
     ProfileModule,
-    JwtModule.register({})
+    UserModule,
   ],
   providers: [
     AuthService,
     AtStrategy,
     RtStrategy,
     ConfigService,
-    ProfileService
+    ProfileService,
+    UserService,
   ],
   exports: [ AuthService, JwtModule ]
 })

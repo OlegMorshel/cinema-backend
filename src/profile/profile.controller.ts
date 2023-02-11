@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Put } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Put } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from "./types";
 import { Profile } from "@prisma/client";
@@ -21,5 +21,11 @@ export class ProfileController {
   @HttpCode(HttpStatus.OK)
   updateCurrentProfile(@GetCurrentUserId() userId: UserId, @Body() dto: UpdateProfileDto) {
     return this.profileService.update({ dto, userID: userId })
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.OK)
+  deleteProfile(@GetCurrentUserId() userId: UserId): Promise<Profile>{
+    return this.profileService.delete(userId)
   }
 }

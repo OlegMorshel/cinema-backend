@@ -12,10 +12,7 @@ import { ProfileModule } from './profile/profile.module';
   imports: [ UserModule, VideoModule, CommentModule, AuthModule, ConfigModule, ProfileModule ],
   controllers: [],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard
-    }
+    { provide: APP_GUARD, useClass: AtGuard }
   ]
 })
 export class AppModule {

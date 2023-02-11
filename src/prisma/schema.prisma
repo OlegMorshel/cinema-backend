@@ -21,9 +21,7 @@ model User {
 }
 
 model Profile {
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
-
+  id               Int           @id @default(autoincrement())
   name             String
   last_name        String
   isBlocked        Boolean?      @default(false)
@@ -34,6 +32,9 @@ model Profile {
   location         String?
   bannerId         String?
   avatarId         String?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
 
   @@map(name: "profiles")
 }

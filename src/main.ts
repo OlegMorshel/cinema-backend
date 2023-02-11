@@ -7,7 +7,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
-    disableErrorMessages: true,
+    // disableErrorMessages: true,
+    skipMissingProperties: true
   }))
   await app.listen(AppModule.port || 5001 )
 }

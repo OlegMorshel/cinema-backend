@@ -6,9 +6,10 @@ import { VideoModule } from './video/video.module'
 import { APP_GUARD } from "@nestjs/core";
 import { AtGuard } from "./common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [UserModule, VideoModule, CommentModule, AuthModule, ConfigModule],
+  imports: [ UserModule, VideoModule, CommentModule, AuthModule, ConfigModule, ProfileModule ],
   controllers: [],
   providers: [
     {

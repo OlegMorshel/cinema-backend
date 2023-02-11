@@ -17,14 +17,15 @@ CREATE TABLE "users" (
 CREATE TABLE "profiles" (
     "userId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
-    "surname" TEXT NOT NULL,
+    "last_name" TEXT NOT NULL,
     "isBlocked" BOOLEAN NOT NULL DEFAULT false,
     "role" "RoleEnumType" DEFAULT 'user',
+    "phone" INTEGER NOT NULL,
     "subscribersCount" INTEGER,
     "description" TEXT NOT NULL,
-    "location" TEXT NOT NULL,
-    "bannerPath" TEXT NOT NULL,
-    "avatarPath" TEXT NOT NULL
+    "location" TEXT,
+    "bannerId" TEXT,
+    "avatarId" TEXT
 );
 
 -- CreateTable
@@ -61,9 +62,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "profiles_userId_key" ON "profiles"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "profiles_name_key" ON "profiles"("name");
 
 -- AddForeignKey
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

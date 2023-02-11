@@ -5,20 +5,26 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { AtStrategy, RtStrategy } from './strategies'
+import { ProfileModule } from "../profile/profile.module";
+import { ProfileService } from "../profile/profile.service";
 
 
 @Module({
-  controllers: [AuthController],
+  controllers: [ AuthController ],
   imports: [
     PrismaModule,
     ConfigModule,
+    ProfileModule,
     JwtModule.register({})
   ],
   providers: [
-      AuthService,
+    AuthService,
     AtStrategy,
     RtStrategy,
-    ConfigService],
-  exports: [AuthService, JwtModule]
+    ConfigService,
+    ProfileService
+  ],
+  exports: [ AuthService, JwtModule ]
 })
-export class AuthModule { }
+export class AuthModule {
+}

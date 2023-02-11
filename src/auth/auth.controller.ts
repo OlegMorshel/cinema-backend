@@ -3,6 +3,7 @@ import { AuthService } from './auth.service'
 import { AuthDto } from './dto'
 import { Tokens, UserId } from './types'
 import { GetCurrentUser, GetCurrentUserId, Public, RtGuard } from "../common";
+import { CreateProfileDto } from "../profile/types";
 
 @Controller('auth')
 export class AuthController {
@@ -14,14 +15,14 @@ export class AuthController {
   @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  signUpLocal(@Body() dto: AuthDto): Promise<Tokens> {
+  signUp(@Body() dto: CreateProfileDto): Promise<Tokens> {
     return this.authService.signUp(dto)
   }
 
   @Public()
   @Post('signin')
   @HttpCode(HttpStatus.OK)
-  signInLocal(@Body() dto: AuthDto): Promise<Tokens> {
+  signIn(@Body() dto: AuthDto): Promise<Tokens> {
     return this.authService.signIn(dto)
   }
 

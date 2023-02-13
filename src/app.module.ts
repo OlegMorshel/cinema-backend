@@ -7,9 +7,19 @@ import { APP_GUARD } from "@nestjs/core";
 import { AtGuard } from "./common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ProfileModule } from './profile/profile.module';
+import { FileModule } from './file/file.module';
+import { MinioClientModule } from "./minio-client/minio-client.module";
 
 @Module({
-  imports: [ UserModule, VideoModule, CommentModule, AuthModule, ConfigModule, ProfileModule ],
+  imports: [
+    UserModule,
+    VideoModule,
+    CommentModule,
+    AuthModule,
+    ConfigModule,
+    ProfileModule,
+    FileModule,
+    MinioClientModule ],
   controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: AtGuard }

@@ -5,12 +5,14 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix('api')
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    // disableErrorMessages: true,
-    skipMissingProperties: true
-  }))
-  await app.listen(AppModule.port || 5001 )
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      // disableErrorMessages: true,
+      skipMissingProperties: true
+    })
+  )
+  await app.listen(AppModule.port || 5001)
 }
 
 bootstrap()

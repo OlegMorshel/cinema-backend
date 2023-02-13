@@ -1,18 +1,94 @@
-# docker-compose.yml
-
-version: '3.8'
+version: '3'
 services:
-
-  postgres:
-    image: postgres:13.5
-    restart: always
+  nestjs:
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    image: tusharchy/nest-and-postgres-application:latest
+    command: npm run start:dev
     environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=mypassword
-    volumes:
-      - postgres:/var/lib/postgresql/data
+      - DB_TYPE=${POSTGRES_USER}
+      - POSTGRES_HOST=pgsql
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_USER}
+      - POSTGRES_SYNC=false
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - APP_PORT=${PORT}
     ports:
-      - '5432:5432'
-
+      - '5001:5001' # expose-to-the-world : only-in-the-docker
+    networks:
+      - sail
+    container_name: nestApp
+    depends_on:
+      - pgsql
+      - minio
+    volumes:
+      - .:/app
+      - /app/node_modules
+  pgsql:
+    image: 'postgres:13'
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    environment:
+      PGPASSWORD: '${DB_PASSWORD:-secret}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - 'sail-pgsql:/var/lib/postgresql/data'
+    container_name: dataBase
+    networks:
+      - sail
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "${DB_DATABASE}",
+          "-U",
+          "${DB_USERNAME}"
+        ]
+      retries: 3
+      timeout: 5s
+  minio:
+    image: 'minio/minio:latest'
+    ports:
+      - '${FORWARD_MINIO_PORT:-8900}:8900'
+      - '${FORWARD_MINIO_CONSOLE_PORT:-9000}:9000'
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: 'sail'
+      MINIO_ROOT_PASSWORD: 'password'
+      MINIO_BUCKET_NAME: 'minio-bucket'
+      MINIO_ENDPOINT: "127.0.0.1"
+      MINIO_PORT: "8900"
+      MINIO_ACCESSKEY: "sail"
+      MINIO_SECRETKEY: "password"
+      MINIO_BUCKET: "images"
+    volumes:
+      - 'sail-minio:/data/minio'
+    networks:
+      - sail
+    command: minio server /data/minio --console-address ":8900"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://127.0.0.1:8900/minio/health/live"
+        ]
+      retries: 3
+      timeout: 5s
+networks:
+  sail:
+    driver: bridge
 volumes:
-  postgres:
+  sail-pgsql:
+    driver: local
+  sail-minio:
+    driver: local

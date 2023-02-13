@@ -8,7 +8,7 @@ import { UserService } from "../user/user.service";
 @Injectable()
 export class ProfileService {
 
-  async create({ userId, profileInfo }: CreateProfileArgs): Promise<Profile> {
+  public async create({ userId, profileInfo }: CreateProfileArgs): Promise<Profile> {
     return this.prisma.profile.create({
       data: {
         ...profileInfo,
@@ -17,7 +17,7 @@ export class ProfileService {
     });
   }
 
-  async update({ userID, dto }: UpdateProfileArgs): Promise<Profile> {
+  public async update({ userID, dto }: UpdateProfileArgs): Promise<Profile> {
     const { userId } = await this.prisma.profile.findFirst({ where: { userId: userID } })
     if (!userId) throw new HttpException(`User with id:${userId} not found`, HttpStatus.CONFLICT,)
 
@@ -27,7 +27,7 @@ export class ProfileService {
     })
   }
 
-  async updateAnotherProfile({ updatedProfileId, userID, dto }: UpdateAnotherProfileArgs): Promise<Profile> {
+  public async updateAnotherProfile({ updatedProfileId, userID, dto }: UpdateAnotherProfileArgs): Promise<Profile> {
     await this.isHaveAccess("admin", userID)
     const { id } = await this.prisma.profile.findFirst({ where: { id: updatedProfileId } })
     if (id === undefined) throw new HttpException(`User with id:${id} not found`, HttpStatus.CONFLICT,)
@@ -38,13 +38,13 @@ export class ProfileService {
     })
   }
 
-  async delete(userId: UserId): Promise<Profile> {
+  public async delete(userId: UserId): Promise<Profile> {
     const deletedProfile = await this.prisma.profile.delete({ where: { userId } })
     await this.userService.delete(userId)
     return deletedProfile
   }
 
-
+  // =======  Utils  =======
   private async isHaveAccess(role: RoleEnumType, userId: UserId): Promise<boolean> {
     const profile = await this.prisma.profile.findUnique({ where: { userId: +userId } })
     if (!profile) throw new HttpException(`Profile with id:${userId} not found.`, HttpStatus.NOT_FOUND)

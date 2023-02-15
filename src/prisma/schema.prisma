@@ -21,17 +21,18 @@ model User {
 }
 
 model Profile {
-  id               Int           @id @default(autoincrement())
-  name             String
-  last_name        String
-  isBlocked        Boolean?      @default(false)
-  role             RoleEnumType? @default(user)
-  phone            Int
-  subscribersCount Int?          @default(0)
-  description      String?
-  location         String?
-  bannerId         String?
-  avatarId         String?
+  id                   Int           @id @default(autoincrement())
+  name                 String
+  last_name            String
+  isBlocked            Boolean?      @default(false)
+  role                 RoleEnumType? @default(user)
+  phone                Int
+  subscribersCount     Int?          @default(0)
+  description          String?
+  location             String?
+  bannerId             String?
+  avatarId             String?
+  subscribedProfileIds Int[]  @default([])       
 
   user   User @relation(fields: [userId], references: [id])
   userId Int  @unique

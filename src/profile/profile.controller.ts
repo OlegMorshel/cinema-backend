@@ -7,38 +7,38 @@ import { ProfileService } from './profile.service'
 
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService,
-  ) {
-  }
+	constructor(private readonly profileService: ProfileService,
+	) {
+	}
 
-  @Put("/me")
-  @HttpCode(HttpStatus.OK)
-  updateCurrentProfile(@GetCurrentUserId() userId: UserId, @Body() dto: UpdateProfileDto) {
-    return this.profileService.update({ dto, userID: userId })
-  }
+	@Put("/me")
+	@HttpCode(HttpStatus.OK)
+	updateCurrentProfile(@GetCurrentUserId() userId: UserId, @Body() dto: UpdateProfileDto) {
+		return this.profileService.update({ dto, userID: userId })
+	}
 
-  @Put(':id')
-  @HttpCode(HttpStatus.OK)
-  updateAnotherProfile(@GetCurrentUserId() userId: UserId, @Param() { id: updatedProfileId }: { id: string }, @Body() dto: UpdateProfileDto): Promise<Profile> {
-    return this.profileService.updateAnotherProfile({ userID: userId, updatedProfileId: +updatedProfileId, dto })
-  }
+	@Put(':id')
+	@HttpCode(HttpStatus.OK)
+	updateAnotherProfile(@GetCurrentUserId() userId: UserId, @Param() { id: updatedProfileId }: { id: string }, @Body() dto: UpdateProfileDto): Promise<Profile> {
+		return this.profileService.updateAnotherProfile({ userID: userId, updatedProfileId: +updatedProfileId, dto })
+	}
 
 
-  @Put("/subscribe/:id")
-  @HttpCode(HttpStatus.OK)
-  subscribe(@Param(){ id: subscribedProfileId }: { id: string } ): Promise<void>{
-    return this.profileService.subscribe(+subscribedProfileId)
-  }
+	@Put("/subscribe/:id")
+	@HttpCode(HttpStatus.OK)
+	subscribe(@GetCurrentUserId() userId: UserId, @Param() { id: subscribedProfileId }: { id: string }): Promise<void> {
+		return this.profileService.subscribe({ userId, profileId: +subscribedProfileId })
+	}
 
-  @Put("/unsubscribe/:id")
-  @HttpCode(HttpStatus.OK)
-  unsubscribe(@Param(){ id: unsubscribedProfileId }: { id: string } ): Promise<void>{
-    return this.profileService.unsubscribe(+unsubscribedProfileId)
-  }
+	@Put("/unsubscribe/:id")
+	@HttpCode(HttpStatus.OK)
+	unsubscribe(@GetCurrentUserId() userId: UserId, @Param() { id: unsubscribedProfileId }: { id: string }): Promise<void> {
+		return this.profileService.unsubscribe({ userId, profileId: +unsubscribedProfileId })
+	}
 
-  @Delete()
-  @HttpCode(HttpStatus.OK)
-  deleteProfile(@GetCurrentUserId() userId: UserId): Promise<Profile>{
-    return this.profileService.delete(userId)
-  }
+	@Delete()
+	@HttpCode(HttpStatus.OK)
+	deleteProfile(@GetCurrentUserId() userId: UserId): Promise<Profile> {
+		return this.profileService.delete(userId)
+	}
 }

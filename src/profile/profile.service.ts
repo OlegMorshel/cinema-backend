@@ -4,8 +4,13 @@ import { UserId } from "../auth/types"
 import { PrismaService } from "../prisma/prisma.service"
 import { UserService } from "../user/user.service"
 import { CreateProfileDto } from "./dto"
-import { UpdateAnotherProfileArgs, UpdateProfileArgs } from "./types"
-import { ProfileId } from './types/profile.types'
+import {
+	ProfileId,
+	SubscribeProfileArgs,
+	UnsubscribeProfileArgs,
+	UpdateAnotherProfileArgs,
+	UpdateProfileArgs
+} from "./types"
 
 @Injectable()
 export class ProfileService {
@@ -43,23 +48,39 @@ export class ProfileService {
 		return deletedProfile
 	}
 
-	public async subscribe(profileId: ProfileId):Promise<void> {
+	public async subscribe({ profileId, userId }: SubscribeProfileArgs): Promise<void> {
 		await this.canUpdateByProfileId("creator", profileId)
+		await this.canAccessSubscribeProfile({ profileId, userId })
 		await this.prisma.profile.update({
-			where: {
-				id: profileId
-			},
-			data: { subscribersCount: { increment: 1} }
+			where: { id: profileId },
+			data: { subscribersCount: { increment: 1 } }
+		})
+		await this.prisma.profile.update({
+			where: { userId },
+			data: {
+				subscribedProfileIds: { push: profileId }
+			}
 		})
 	}
 
-	public async unsubscribe(profileId: ProfileId):Promise<void> {
+	public async unsubscribe({ userId, profileId }: UnsubscribeProfileArgs): Promise<void> {
 		await this.canUpdateByProfileId("creator", profileId)
 		await this.prisma.profile.update({
 			where: {
 				id: profileId
 			},
-			data: { subscribersCount: { decrement: 1} }
+			data: { subscribersCount: { decrement: 1 } }
+		})
+
+		const { subscribedProfileIds } = await this.prisma.profile.findUnique({
+			where: { userId },
+			select: { subscribedProfileIds: true }
+		})
+		await this.prisma.profile.update({
+			where: { userId },
+			data: {
+				subscribedProfileIds: { set: subscribedProfileIds.filter(id => id !== profileId) }
+			}
 		})
 	}
 
@@ -76,7 +97,18 @@ export class ProfileService {
 		if (!profile) throw new HttpException(`Profile with id:${profileId} not found.`, HttpStatus.NOT_FOUND)
 		if (profile.role !== role) throw new HttpException(`For this action target should be ${role}`, HttpStatus.BAD_REQUEST)
 		return true
-	} 
+	}
+
+	private async canAccessSubscribeProfile({ profileId, userId }: SubscribeProfileArgs): Promise<boolean> {
+		const { subscribedProfileIds } = await this.prisma.profile.findUnique({
+			where: { userId },
+			select: { subscribedProfileIds: true }
+		})
+		if (subscribedProfileIds.includes(profileId)) {
+			throw new HttpException(`This profile already subscribe to Profile with id:${profileId}`, HttpStatus.BAD_REQUEST)
+		}
+		return true
+	}
 
 	constructor(
 		private prisma: PrismaService,

@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: npm run start:dev
+    command: yarn start:dev
     environment:
       - DB_TYPE=${POSTGRES_USER}
       - APP_PORT=5001
@@ -15,7 +15,7 @@ services:
     container_name: backend-cinema-app
     depends_on:
       - pgsql
-      # - minio
+      - minio
     volumes:
       - .:/app
       - /app/node_modules
@@ -25,7 +25,7 @@ services:
       - '5432:5432'
     environment:
       PGPASSWORD: 'HNQCu1PPZ1BvYcw8'
-      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_DB: 'cinema-backend-db'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'HNQCu1PPZ1BvYcw8'
     volumes:
@@ -46,41 +46,41 @@ services:
         ]
       retries: 3
       timeout: 5s
-  # minio:
-  #   image: 'minio/minio:latest'
-  #   ports:
-  #     - '${FORWARD_MINIO_PORT:-8900}:8900'
-  #     - '${FORWARD_MINIO_CONSOLE_PORT:-9000}:9000'
-  #   container_name: minio
-  #   environment:
-  #     MINIO_ROOT_USER: 'sail'
-  #     MINIO_ROOT_PASSWORD: 'password'
-  #     MINIO_BUCKET_NAME: 'minio-bucket'
-  #     MINIO_ENDPOINT: "127.0.0.1"
-  #     MINIO_PORT: "8900"
-  #     MINIO_ACCESSKEY: "sail"
-  #     MINIO_SECRETKEY: "password"
-  #     MINIO_BUCKET: "images"
-  #   volumes:
-  #     - 'sail-minio:/data/minio'
-  #   networks:
-  #     - sail
-  #   command: minio server /data/minio --console-address ":8900"
-  #   healthcheck:
-  #     test:
-  #       [
-  #         "CMD",
-  #         "curl",
-  #         "-f",
-  #         "http://127.0.0.1:8900/minio/health/live"
-  #       ]
-  #     retries: 3
-  #     timeout: 5s
+  minio:
+     image: 'minio/minio:latest'
+     ports:
+       - '8900:8900'
+       - '9000:9000'
+     container_name: minio
+     environment:
+       MINIO_ROOT_USER: 'sail'
+       MINIO_ROOT_PASSWORD: 'password'
+       MINIO_BUCKET_NAME: 'images'
+       MINIO_ENDPOINT: "127.0.0.1"
+       MINIO_PORT: "8900"
+       MINIO_ACCESSKEY: "sail"
+       MINIO_SECRETKEY: "password"
+       MINIO_BUCKET: "images"
+     volumes:
+       - 'sail-minio:/data/minio'
+     networks:
+       - sail
+     command: minio server /data/minio --console-address ":8900"
+     healthcheck:
+       test:
+         [
+           "CMD",
+           "curl",
+           "-f",
+           "http://127.0.0.1:8900/minio/health/live"
+         ]
+       retries: 3
+       timeout: 5s
 networks:
   sail:
     driver: bridge
 volumes:
   sail-pgsql:
     driver: local
-  # sail-minio:
-  #   driver: local
+  sail-minio:
+     driver: local

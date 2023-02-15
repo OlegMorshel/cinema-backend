@@ -8,8 +8,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      disableErrorMessages: true,
-      skipMissingProperties: true
+      transform: true
     })
   )
   await app.listen(AppModule.port || 5001)

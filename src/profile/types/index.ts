@@ -1,4 +1,4 @@
-export * from "./create-profile.dto"
-export * from "./update-profile.dto"
-export * from "./role.type"
+export * from "../dto/create-profile.dto"
+export * from "../dto/update-profile.dto"
 export * from "./service.types"
+

@@ -1,9 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import { GetCurrentUser, GetCurrentUserId, Public, RtGuard } from "../common"
 import { AuthService } from './auth.service'
-import { AuthDto } from './dto'
+import { AuthDto, SignUpDto } from './dto'
 import { Tokens, UserId } from './types'
-import { GetCurrentUser, GetCurrentUserId, Public, RtGuard } from "../common";
-import { CreateProfileDto } from "../profile/types";
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +14,7 @@ export class AuthController {
   @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  signUp(@Body() dto: CreateProfileDto): Promise<Tokens> {
+  signUp(@Body() dto: SignUpDto): Promise<Tokens> {
     return this.authService.signUp(dto)
   }
 

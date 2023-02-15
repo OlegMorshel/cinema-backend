@@ -1,11 +1,11 @@
-import { UserId } from "../../auth/types";
-import { CreateProfileDto } from "./create-profile.dto";
-import { UpdateProfileDto } from "./update-profile.dto";
-import { ProfileId } from "./profile.types";
+import { SignUpDto } from 'src/auth/dto'
+import { UserId } from "../../auth/types"
+import { UpdateProfileDto } from "../dto/update-profile.dto"
+import { ProfileId } from "./profile.types"
 
 export type CreateProfileArgs = {
   userId: UserId,
-  profileInfo: Omit<CreateProfileDto, 'password' | 'email'>
+  profileInfo: Omit<SignUpDto, 'password' | 'email'>
 }
 
 export interface UpdateAnotherProfileArgs extends UpdateProfileArgs {

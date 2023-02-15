@@ -15,17 +15,20 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "profiles" (
-    "userId" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
-    "isBlocked" BOOLEAN NOT NULL DEFAULT false,
+    "isBlocked" BOOLEAN DEFAULT false,
     "role" "RoleEnumType" DEFAULT 'user',
     "phone" INTEGER NOT NULL,
     "subscribersCount" INTEGER,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "location" TEXT,
     "bannerId" TEXT,
-    "avatarId" TEXT
+    "avatarId" TEXT,
+    "userId" INTEGER NOT NULL,
+
+    CONSTRAINT "profiles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -55,6 +58,15 @@ CREATE TABLE "comments" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "comments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "File" (
+    "id" SERIAL NOT NULL,
+    "path" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "File_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

@@ -5,14 +5,14 @@ WORKDIR /app
 COPY package*.json ./
 COPY src/prisma ./prisma
 
-RUN npm install
+RUN yarn
 
 COPY . .
 
-RUN npm run migrate
+RUN yarn migrate
 
-RUN npm run build
+RUN yarn build
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start:dev"]
+CMD ["yarn", "start:dev"]

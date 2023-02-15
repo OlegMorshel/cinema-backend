@@ -1,38 +1,31 @@
-import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator"
 
 export class UpdateProfileDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string
-
   @IsString()
-  @IsNotEmpty()
-  password: string
-
-  @IsString()
+  @IsOptional()
   name: string
 
   @IsString()
+  @IsOptional()
   last_name: string
 
-  @IsBoolean()
-  isBlocked?: boolean
-
   @IsNumber()
+  @IsOptional()
   phone: number
 
-  @IsNumber()
-  subscribersCount?: number
-
   @IsString()
+  @IsOptional()
   description?: string
 
   @IsString()
+  @IsOptional()
   location?: string
 
   @IsString()
+  @IsOptional()
   bannerId?: string
 
   @IsString()
+  @IsOptional()
   avatarId?: string
 }

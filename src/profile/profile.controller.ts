@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Put } from '@nestjs/common';
-import { ProfileService } from './profile.service';
-import { UpdateProfileDto } from "./types";
-import { Profile } from "@prisma/client";
-import { GetCurrentUserId } from "../common";
-import { UserId } from "../auth/types";
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Put } from '@nestjs/common'
+import { Profile } from "@prisma/client"
+import { UserId } from "../auth/types"
+import { GetCurrentUserId } from "../common"
+import { UpdateProfileDto } from './dto'
+import { ProfileService } from './profile.service'
 
 @Controller('profile')
 export class ProfileController {
@@ -11,16 +11,23 @@ export class ProfileController {
   ) {
   }
 
-  @Put(":id")
+  @Put("/me")
+  @HttpCode(HttpStatus.OK)
+  updateCurrentProfile(@GetCurrentUserId() userId: UserId, @Body() dto: UpdateProfileDto) {
+    return this.profileService.update({ dto, userID: userId })
+  }
+
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   updateAnotherProfile(@GetCurrentUserId() userId: UserId, @Param() { id: updatedProfileId }: { id: string }, @Body() dto: UpdateProfileDto): Promise<Profile> {
     return this.profileService.updateAnotherProfile({ userID: userId, updatedProfileId: +updatedProfileId, dto })
   }
 
-  @Put()
+
+  @Put("/subscribe/:id")
   @HttpCode(HttpStatus.OK)
-  updateCurrentProfile(@GetCurrentUserId() userId: UserId, @Body() dto: UpdateProfileDto) {
-    return this.profileService.update({ dto, userID: userId })
+  subscribe(@Param(){ id: subscribedProfileId }: { id: string } ): Promise<Profile>{
+    return this.profileService.subscribe(+subscribedProfileId)
   }
 
   @Delete()

@@ -5,6 +5,7 @@ import { PrismaService } from "../prisma/prisma.service"
 import { UserService } from "../user/user.service"
 import { CreateProfileDto } from "./dto"
 import { UpdateAnotherProfileArgs, UpdateProfileArgs } from "./types"
+import { ProfileId } from './types/profile.types'
 
 @Injectable()
 export class ProfileService {
@@ -42,13 +43,30 @@ export class ProfileService {
 		return deletedProfile
 	}
 
+	public async subscribe(profileId: ProfileId): Promise<Profile>{
+		await this.canUpdate("creator", profileId)
+		return this.prisma.profile.update({
+			where: {
+				id: profileId
+			},
+			data: { subscribersCount: { increment: 1} }
+		})
+	}
+
 	// =======  Utils  =======
 	private async isHaveAccess(role: RoleEnumType, userId: UserId): Promise<boolean> {
 		const profile = await this.prisma.profile.findUnique({ where: { userId: +userId } })
-		if (!profile) throw new HttpException(`Profile with id:${userId} not found.`, HttpStatus.NOT_FOUND)
+		if (!profile) throw new HttpException(`User with id:${userId} not found.`, HttpStatus.NOT_FOUND)
 		if (profile.role !== role) throw new HttpException(`You need have the Role:${role} to change another profile`, HttpStatus.METHOD_NOT_ALLOWED)
 		return true
 	}
+
+	private async canUpdate(role: RoleEnumType, profileId: ProfileId): Promise<boolean> {
+		const profile = await this.prisma.profile.findUnique({ where: { id: +profileId } })
+		if (!profile) throw new HttpException(`Profile with id:${profileId} not found.`, HttpStatus.NOT_FOUND)
+		if (profile.role !== role) throw new HttpException(`For this action target should be ${role}`, HttpStatus.BAD_REQUEST)
+		return true
+	} 
 
 	constructor(
 		private prisma: PrismaService,

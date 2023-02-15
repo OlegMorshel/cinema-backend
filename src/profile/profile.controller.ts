@@ -26,8 +26,14 @@ export class ProfileController {
 
   @Put("/subscribe/:id")
   @HttpCode(HttpStatus.OK)
-  subscribe(@Param(){ id: subscribedProfileId }: { id: string } ): Promise<Profile>{
+  subscribe(@Param(){ id: subscribedProfileId }: { id: string } ): Promise<void>{
     return this.profileService.subscribe(+subscribedProfileId)
+  }
+
+  @Put("/unsubscribe/:id")
+  @HttpCode(HttpStatus.OK)
+  unsubscribe(@Param(){ id: unsubscribedProfileId }: { id: string } ): Promise<void>{
+    return this.profileService.unsubscribe(+unsubscribedProfileId)
   }
 
   @Delete()

@@ -27,7 +27,7 @@ model Profile {
   isBlocked        Boolean?      @default(false)
   role             RoleEnumType? @default(user)
   phone            Int
-  subscribersCount Int?
+  subscribersCount Int?          @default(0)
   description      String?
   location         String?
   bannerId         String?

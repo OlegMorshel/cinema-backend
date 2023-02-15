@@ -43,13 +43,23 @@ export class ProfileService {
 		return deletedProfile
 	}
 
-	public async subscribe(profileId: ProfileId): Promise<Profile>{
-		await this.canUpdate("creator", profileId)
-		return this.prisma.profile.update({
+	public async subscribe(profileId: ProfileId):Promise<void> {
+		await this.canUpdateByProfileId("creator", profileId)
+		await this.prisma.profile.update({
 			where: {
 				id: profileId
 			},
 			data: { subscribersCount: { increment: 1} }
+		})
+	}
+
+	public async unsubscribe(profileId: ProfileId):Promise<void> {
+		await this.canUpdateByProfileId("creator", profileId)
+		await this.prisma.profile.update({
+			where: {
+				id: profileId
+			},
+			data: { subscribersCount: { decrement: 1} }
 		})
 	}
 
@@ -61,7 +71,7 @@ export class ProfileService {
 		return true
 	}
 
-	private async canUpdate(role: RoleEnumType, profileId: ProfileId): Promise<boolean> {
+	private async canUpdateByProfileId(role: RoleEnumType, profileId: ProfileId): Promise<boolean> {
 		const profile = await this.prisma.profile.findUnique({ where: { id: +profileId } })
 		if (!profile) throw new HttpException(`Profile with id:${profileId} not found.`, HttpStatus.NOT_FOUND)
 		if (profile.role !== role) throw new HttpException(`For this action target should be ${role}`, HttpStatus.BAD_REQUEST)
